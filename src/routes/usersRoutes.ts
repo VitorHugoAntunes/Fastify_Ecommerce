@@ -66,7 +66,7 @@ async function usersRoutes(fastify: FastifyInstance, options: any) {
     response.send(user);
   });
 
-  // Efetua o login do usuario
+  // Efetua o login do usuario com autenticacao
   fastify.post('/login', async (request: FastifyRequest<{ Body: IBodyUser }>, response: FastifyReply) => {
 
     const { email, password } = request.body;

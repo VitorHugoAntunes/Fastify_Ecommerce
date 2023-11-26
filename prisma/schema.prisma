@@ -18,6 +18,7 @@ model User {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   Cart       Cart[]
+  Order      Order?
 }
 
 model Product {
@@ -52,17 +53,20 @@ model Stock {
 model Cart {
   id       String    @id @default(uuid())
   user_id  String    @unique @map("user_id")
+  order_id String    @unique @map("order_id")
   products Product[] @relation("CartProducts")
   user     User?     @relation(fields: [user_id], references: [id])
-  Order    Order[]
+  order    Order?    @relation(fields: [order_id], references: [id])
 }
 
 model Order {
   id           String   @id @default(uuid())
-  cart_id      String   @map("cart_id")
+  user_id      String   @unique @map("user_id")
+  cart_id      String   @unique @map("cart_id")
   payment_type String
   total_amount Float
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
-  cart         Cart     @relation(fields: [cart_id], references: [id])
+  user         User?    @relation(fields: [user_id], references: [id])
+  cart         Cart?
 }

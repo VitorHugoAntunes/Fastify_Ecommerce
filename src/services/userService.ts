@@ -35,7 +35,7 @@ export const getAllUsers = async () => {
     const allUsers = await prisma.user.findMany();
 
     if (!allUsers) {
-      throw new Error('No useres found');
+      throw new Error('No users found');
     }
 
     return allUsers;
