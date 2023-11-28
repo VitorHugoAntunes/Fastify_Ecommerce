@@ -3,6 +3,7 @@ import Jwt from 'jsonwebtoken'
 import crypto from 'crypto'
 import bcrypt from 'bcrypt';
 import { FastifyReply, FastifyRequest } from 'fastify';
+import { sendEmailToUser } from './emailService';
 
 const prisma = new PrismaClient();
 
@@ -16,6 +17,16 @@ export const getUserById = async (userId: string) => {
   try {
     const user = await prisma.user.findUnique({
       where: { id: userId },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        password: true,
+        created_at: true,
+        updated_at: true,
+        Cart: true,
+        Order: true,
+      }
     });
 
     if (!user) {
@@ -92,5 +103,56 @@ export async function authenticateUser(userEmail: string, userPassword: string, 
     return response.send({ message: 'User authenticated', token: token });
   } else {
     return response.status(401).send({ error: 'Invalid credentials' });
+  }
+}
+
+export async function sendResetEmailToUser(userEmail: string) {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email: userEmail },
+      select: { id: true, email: true, password: true }
+    })
+
+    if (user) {
+      const message = {
+        from: process.env.EMAIl,
+        to: user.email,
+        subject: "Resetar senha",
+        text: "Acesse esse link seguro para resetar sua senha",
+      };
+      const transport = await sendEmailToUser();
+
+      transport.sendMail(message, (error, info) => {
+        if (error) console.log(error)
+        else console.log(info)
+      })
+    }
+  } catch (error) {
+    console.log(error);
+    throw new Error('Error on sending email to user')
+  }
+}
+
+export async function resetUserPassword(userEmail: string, userPassword: string) {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email: userEmail },
+    })
+
+    if (user) {
+      const resetPassword = await prisma.user.update({
+        where: {
+          email: userEmail
+        },
+        data: {
+          password: userPassword
+        }
+      })
+
+      return resetPassword;
+    }
+  } catch (error) {
+    console.log(error);
+    throw new Error('Error on reset user password')
   }
 }

@@ -18,20 +18,19 @@ model User {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   Cart       Cart[]
-  Order      Order?
+  Order      Order[]
 }
 
 model Product {
-  id          String   @id @default(uuid())
-  title       String
-  description String
-  price       Float
-  quantity    Int?     @default(1)
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-  photos      Photo[]
-  carts       Cart[]   @relation("CartProducts")
-  stock       Stock[]
+  id           String        @id @default(uuid())
+  title        String
+  description  String
+  price        Float
+  created_at   DateTime      @default(now())
+  updated_at   DateTime      @updatedAt
+  photos       Photo[]
+  stock        Stock[]
+  cartProducts CartProduct[]
 }
 
 model Photo {
@@ -51,22 +50,31 @@ model Stock {
 }
 
 model Cart {
-  id       String    @id @default(uuid())
-  user_id  String    @unique @map("user_id")
-  order_id String    @unique @map("order_id")
-  products Product[] @relation("CartProducts")
-  user     User?     @relation(fields: [user_id], references: [id])
-  order    Order?    @relation(fields: [order_id], references: [id])
+  id           String        @id @default(uuid())
+  user_id      String        @unique @map("user_id")
+  order_id     String?       @map("order_id")
+  cartProducts CartProduct[]
+  user         User?         @relation(fields: [user_id], references: [id])
+  order        Order[]
+}
+
+model CartProduct {
+  id        String  @id @default(uuid())
+  cartId    String  @map("cart_id")
+  productId String  @map("product_id")
+  quantity  Int
+  cart      Cart    @relation(fields: [cartId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
 }
 
 model Order {
   id           String   @id @default(uuid())
-  user_id      String   @unique @map("user_id")
-  cart_id      String   @unique @map("cart_id")
+  user_id      String   @map("user_id")
+  cart_id      String   @map("cart_id")
   payment_type String
   total_amount Float
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
   user         User?    @relation(fields: [user_id], references: [id])
-  cart         Cart?
+  cart         Cart?    @relation(fields: [cart_id], references: [id])
 }

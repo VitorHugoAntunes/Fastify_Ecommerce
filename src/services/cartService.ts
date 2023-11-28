@@ -9,12 +9,21 @@ export const getCartById = async (cartId: string) => {
       where: { id: cartId },
       select: {
         id: true,
-        user_id: true,
         user: {
-          select: { id: true, username: true }
+          select: {
+            id: true,
+            username: true,
+            email: true
+          }
         },
-        products: true,
-        Order: true
+        cartProducts: {
+          select: {
+            id: true,
+            product: true,
+            quantity: true,
+          }
+        },
+        order: true
       }
     })
 
@@ -30,8 +39,8 @@ export const createCart = async (userId: string, productIds: string[]) => {
   try {
     // Verificar se já existe um carrinho para esse usuário
     const existingCart = await prisma.cart.findUnique({
-      where: { user_id: userId }, // Ajuste aqui
-      include: { products: true },
+      where: { user_id: userId },
+      include: { cartProducts: true },
     });
 
     if (existingCart) {
@@ -39,7 +48,7 @@ export const createCart = async (userId: string, productIds: string[]) => {
       const updatedCart = await prisma.cart.update({
         where: { id: existingCart.id },
         data: {
-          products: {
+          cartProducts: {
             connect: productIds.map(productId => ({ id: productId })),
           },
         },
@@ -51,7 +60,7 @@ export const createCart = async (userId: string, productIds: string[]) => {
       const newCart = await prisma.cart.create({
         data: {
           user: { connect: { id: userId } },
-          products: {
+          cartProducts: {
             connect: productIds.map(productId => ({ id: productId })),
           },
         },
