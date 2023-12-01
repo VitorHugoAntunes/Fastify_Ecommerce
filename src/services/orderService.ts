@@ -61,7 +61,27 @@ export const createNewOrder = async (userId: string, cartId: string, paymentType
       },
     });
 
-    return { newOrder, updatedCart };
+    const allCartProducts = await prisma.cartProduct.findMany();
+
+    const updatedStockPromises = allCartProducts.map(async (cartProduct) => {
+      const { productId, quantity } = cartProduct;
+
+      const updatedStock = await prisma.stock.update({
+        where: {
+          product_id: productId,
+        },
+        data: {
+          quantity: {
+            decrement: quantity,
+          },
+        },
+      });
+
+      return updatedStock;
+    });
+
+
+    return { newOrder, updatedCart, updatedStockPromises };
   } catch (error) {
     console.log(error)
     throw new Error(`Error on create order`);

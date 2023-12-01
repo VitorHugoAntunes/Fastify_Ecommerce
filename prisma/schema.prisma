@@ -42,7 +42,7 @@ model Photo {
 
 model Stock {
   id         String   @id @default(uuid())
-  product_id String   @map("product_id")
+  product_id String   @unique @map("product_id")
   product    Product  @relation(fields: [product_id], references: [id])
   quantity   Int
   created_at DateTime @default(now())
@@ -61,7 +61,7 @@ model Cart {
 model CartProduct {
   id        String  @id @default(uuid())
   cartId    String  @map("cart_id")
-  productId String  @map("product_id")
+  productId String  @unique @map("product_id")
   quantity  Int
   cart      Cart    @relation(fields: [cartId], references: [id])
   product   Product @relation(fields: [productId], references: [id])

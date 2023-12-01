@@ -19,7 +19,7 @@ async function productRoutes(fastify: FastifyInstance, options: any) {
   });
 
   // Busca todos os produtos do banco
-  fastify.get('/products',  async (request: FastifyRequest<{ Params: { id: string } }>, response: FastifyReply) => {
+  fastify.get('/products', async (request: FastifyRequest<{ Params: { id: string } }>, response: FastifyReply) => {
     try {
       const allProducts = await getAllProducts();
       response.send(allProducts);

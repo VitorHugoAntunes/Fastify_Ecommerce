@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import { createCart, getCartById } from "../services/cartService";
-import { addProductToCart } from "../services/cartProductService";
+import { addProductToCart, deleteCartProductById } from "../services/cartProductService";
 
 interface IBodyCart {
   userId: string,
@@ -32,6 +32,19 @@ async function cartRoutes(fastify: FastifyInstance, options: any) {
     if (cart) {
       await addProductToCart(cart.id, productId, quantity);
       response.send(cart);
+    }
+  })
+
+  fastify.delete('/cart/product/:id', async (request: FastifyRequest<{ Params: { id: string } }>, response: FastifyReply) => {
+    try {
+      const productId = request.params.id;
+
+      await deleteCartProductById(productId);
+
+      response.send('Product deleted successfully');
+    } catch (error) {
+      console.error(error);
+      response.code(404).send('Cart product not found');
     }
   })
 }

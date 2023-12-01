@@ -41,6 +41,7 @@ CREATE TABLE `Stock` (
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
 
+    UNIQUE INDEX `Stock_product_id_key`(`product_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -61,6 +62,7 @@ CREATE TABLE `CartProduct` (
     `product_id` VARCHAR(191) NOT NULL,
     `quantity` INTEGER NOT NULL,
 
+    UNIQUE INDEX `CartProduct_product_id_key`(`product_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

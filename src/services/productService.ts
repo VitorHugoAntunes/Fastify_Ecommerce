@@ -7,10 +7,18 @@ export const getProductById = async (productId: string) => {
   try {
     const product = await prisma.product.findUnique({
       where: { id: productId },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        price: true,
+        photos: true,
+        stock: true,
+        _count: true,
+      }
     });
 
     if (!product) {
-      console.log('ID DO PRODUTO:', productId)
       throw new Error('Product not found');
     }
 
@@ -24,9 +32,20 @@ export const getProductById = async (productId: string) => {
 // Busca todos os produtos do banco
 export const getAllProducts = async () => {
   try {
-    const allProducts = await prisma.product.findMany();
+    const allProducts = await prisma.product.findMany(
+      {
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          price: true,
+          photos: true,
+          stock: true
+        }
+      }
+    );
 
-    if(!allProducts) {
+    if (!allProducts) {
       throw new Error('No products found');
     }
 
