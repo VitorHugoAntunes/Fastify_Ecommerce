@@ -24,7 +24,20 @@ export const getUserById = async (userId: string) => {
         password: true,
         created_at: true,
         updated_at: true,
-        Cart: true,
+        Cart: {
+          select: {
+            id: true,
+            cartProducts: {
+              select: {
+                id: true,
+                cartId: true,
+                productId: true,
+                product: true,
+                quantity: true,
+              }
+            }
+          }
+        },
         Order: true,
       }
     });

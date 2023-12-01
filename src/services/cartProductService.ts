@@ -71,3 +71,20 @@ export const deleteCartProductById = async (productId: string) => {
     throw new Error('Error on delete product');
   }
 }
+
+export const deleteAllCartProducts = async (userId: string) => {
+  try {
+    const product = await prisma.cartProduct.deleteMany({
+      where: {
+        cart: {
+          user_id: userId
+        }
+      }
+    });
+
+    return product;
+  } catch (error) {
+    console.error(error);
+    throw new Error('Error on delete product');
+  }
+}
